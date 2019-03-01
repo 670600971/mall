@@ -9,18 +9,20 @@ class Index extends BaseMall {
 
     public function _initialize() {
         parent::_initialize();
+        // 加载语言包
         Lang::load(APP_PATH . 'home/lang/'.config('default_lang').'/index.lang.php');
         Lang::load(APP_PATH . 'home/lang/'.config('default_lang').'/sellergroupbuy.lang.php');
     }
 
     public function index() {
+        // dump(APP_PATH);
         $this->assign('index_sign', 'index');
-
+        // 设置缓存和获取数据
         $this->getIndexData();
-        
         //楼层数据
         $floor_block=array();
-	$goodsclass_list = db('goodsclass')->where('gc_parent_id', 0)->where('gc_show', 1)->order('gc_sort asc')->select();
+        // 获取商品分类列表
+	    $goodsclass_list = db('goodsclass')->where('gc_parent_id', 0)->where('gc_show', 1)->order('gc_sort asc')->select();
         foreach ($goodsclass_list as $key => $goodsclass) {
             $floor_list = $this->getFloorList($goodsclass['gc_id']);
             $floor_block[$key] = $floor_list;
@@ -42,11 +44,12 @@ class Index extends BaseMall {
         //SEO 设置
         $seo = model('seo')->type('index')->show();
         $this->_assign_seo($seo);
+        
         return $this->fetch($this->template_dir . 'index');
     }
     
     private function getIndexData()
-    {
+    {   
         $index_data = rcache("index_data");
         if (empty($index_data)) {
             $index_data = array();
